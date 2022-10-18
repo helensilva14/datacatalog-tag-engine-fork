@@ -18,6 +18,7 @@ Note: In the deployment procedure below, we use one GCP project for running Tag 
 ```
 export TAG_ENGINE_PROJECT=tag-engine-vanilla-337221
 export TAG_ENGINE_REGION=us-central
+export TAG_ENGINE_SUB_REGION=us-central1
 export BQ_PROJECT=warehouse-337221
 export TAG_ENGINE_SA=${TAG_ENGINE_PROJECT}@appspot.gserviceaccount.com
 export TERRAFORM_SA=terraform@${TAG_ENGINE_PROJECT}.iam.gserviceaccount.com
@@ -28,6 +29,7 @@ gcloud config set project $TAG_ENGINE_PROJECT
 ```
 gcloud services enable iam.googleapis.com
 gcloud services enable appengine.googleapis.com
+gcloud services enable firestore.googleapis.com
 ```
 
 #### Step 3: Clone this code repository
@@ -35,7 +37,7 @@ gcloud services enable appengine.googleapis.com
 git clone https://github.com/GoogleCloudPlatform/datacatalog-tag-engine.git
 ```
 
-#### Step 4: Set the input variables
+#### Step 4: Set the Terraform variables by creating a variables.tfvars file:
 ```
 cd datacatalog-tag-engine
 cat > deploy/variables.tfvars << EOL
@@ -46,7 +48,7 @@ app_engine_subregion="${TAG_ENGINE_SUB_REGION}"
 EOL
 ```
 
-Edit the four variables in `datacatalog-tag-engine/tagengine.ini`: 
+#### Step 5: Create the Tag Engine configuration file (tagengine.ini):
 ```
 [DEFAULT]
 TAG_ENGINE_PROJECT = tag-engine-develop
@@ -57,8 +59,8 @@ WORK_QUEUE = tag-engine-work-queue
 
 #### Step 5: Create the Firestore database and deploy the App Engine application
 ```
-gcloud alpha firestore databases create --project=$TAG_ENGINE_PROJECT --region=$TAG_ENGINE_REGION     
 gcloud app create --project=$TAG_ENGINE_PROJECT --region=$TAG_ENGINE_REGION
+gcloud firestore databases create --project=$TAG_ENGINE_PROJECT --region=$TAG_ENGINE_REGION  
 gcloud app deploy datacatalog-tag-engine/app.yaml
 ```
 
