@@ -86,7 +86,7 @@ gcloud auth activate-service-account $TERRAFORM_SA --key-file=/tmp/key.json
 ```  
 cd datacatalog-tag-engine/deploy
 terraform init
-terraform apply
+terraform apply -var-file variables.tfvars
 ```  
 
 #### Step 9: (Optional) Delete the Terraform service account
